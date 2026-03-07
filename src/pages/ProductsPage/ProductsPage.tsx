@@ -143,6 +143,10 @@ export const ProductsPage = () => {
         <div className={styles.card}>
           <div className={styles.positionsBand}>
             <p className={styles.positionsLabel}>Все позиции</p>
+            <button type="button" className={styles.addButton}>
+              <span className={styles.addIcon} aria-hidden="true">+</span>
+              Добавить
+            </button>
           </div>
 
           {isLoading && (

@@ -1,5 +1,7 @@
 .page {
-  min-height: 100vh;
+  width: 100%;
+  max-width: 1920px;
+  min-height: 824px;
   background: #f8fafc;
   padding: 32px 20px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -12,8 +14,9 @@
 }
 
 .header {
+  --search-width: clamp(560px, 56vw, 1023px);
   display: grid;
-  grid-template-columns: 1fr 1023px 1fr;
+  grid-template-columns: 1fr var(--search-width) 1fr;
   align-items: center;
   margin-bottom: 0;
 }
@@ -29,17 +32,18 @@
 .searchInputWrap {
   position: relative;
   width: 100%;
+  max-width: var(--search-width);
 }
 
 .searchInput {
   width: 100%;
-  height: 48px;
-  padding: 0 14px 0 42px;
+  height: 28px;
+  padding: 0 10px 0 32px;
   border: 1px solid #cbd5e1;
-  border-radius: 10px;
+  border-radius: 7px;
   background: #ffffff;
   color: #1e293b;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   outline: none;
 }
 
@@ -49,11 +53,11 @@
 
 .searchIcon {
   position: absolute;
-  left: 14px;
+  left: 10px;
   top: 50%;
   transform: translateY(-50%);
-  width: 18px;
-  height: 18px;
+  width: 14px;
+  height: 14px;
   color: #94a3b8;
   pointer-events: none;
 }
@@ -80,6 +84,9 @@
   width: 100%;
   background: #f8fafc;
   padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .positionsLabel {
@@ -90,9 +97,42 @@
   color: #0f172a;
 }
 
+.addButton {
+  border: none;
+  border-radius: 8px;
+  background: #0059c9;
+  color: #ffffff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  height: 34px;
+  padding: 0 16px 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  margin-right: 52px;
+}
+
+.addButton:hover {
+  background: #0047a3;
+}
+
+.addIcon {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
 .card {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
+  border: none;
   border-radius: 18px;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
   overflow: hidden;
