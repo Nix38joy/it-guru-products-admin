@@ -129,6 +129,13 @@ export const LoginForm = () => {
       <button type="submit" disabled={isSubmitting} className={styles.button}>
         {isSubmitting ? 'Вход...' : 'Войти'}
       </button>
+
+      <div className={styles.bottomBlock}>
+        <div className={styles.divider} />
+        <p className={styles.signupText}>
+          Нет аккаунта? <a href="#" className={styles.signupLink}>Создать</a>
+        </p>
+      </div>
     </form>
   );
 };

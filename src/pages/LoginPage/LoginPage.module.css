@@ -23,6 +23,23 @@
   margin-bottom: 32px;
 }
 
+.logoCircle {
+  width: 36px;
+  height: 36px;
+  margin: 0 auto 14px;
+  border-radius: 999px;
+  background: linear-gradient(155deg, #f9fbfe 0%, #eef3f8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+}
+
+.logoIcon {
+  width: 32px;
+  height: 32px;
+}
+
 .title {
   color: #1e293b;
   font-size: 1.5rem;
