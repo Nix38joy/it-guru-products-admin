@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useSessionStore } from '@/entities/session/store';
 import { loginSchema, type LoginFormInput, type LoginFormValues } from '@/features/auth/model/loginSchema';
+import styles from './LoginForm.module.css';
 
 export const LoginForm = () => {
   const navigate = useNavigate();
@@ -31,18 +32,24 @@ export const LoginForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '15px', width: '300px' }}>
-      <input {...register('username')} placeholder="Логин" style={{ padding: '10px' }} />
-      {errors.username && <span style={{ color: 'red', fontSize: '12px' }}>{errors.username.message}</span>}
+    <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
+      <div className={styles.field}>
+        <label htmlFor="username" className={styles.fieldLabel}>Логин</label>
+        <input id="username" {...register('username')} className={styles.input} />
+        {errors.username && <span className={styles.error}>{errors.username.message}</span>}
+      </div>
 
-      <input {...register('password')} type="password" placeholder="Пароль" style={{ padding: '10px' }} />
-      {errors.password && <span style={{ color: 'red', fontSize: '12px' }}>{errors.password.message}</span>}
+      <div className={styles.field}>
+        <label htmlFor="password" className={styles.fieldLabel}>Пароль</label>
+        <input id="password" {...register('password')} type="password" className={styles.input} />
+        {errors.password && <span className={styles.error}>{errors.password.message}</span>}
+      </div>
 
-      <label style={{ color: 'white', display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <label className={styles.checkboxRow}>
         <input type="checkbox" {...register('rememberMe')} /> Запомнить меня
       </label>
 
-      <button type="submit" disabled={isSubmitting} style={{ padding: '10px', cursor: 'pointer' }}>
+      <button type="submit" disabled={isSubmitting} className={styles.button}>
         {isSubmitting ? 'Вход...' : 'Войти'}
       </button>
     </form>
