@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useSessionStore } from '@/entities/session/store';
 import { loginSchema, type LoginFormInput, type LoginFormValues } from '@/features/auth/model/loginSchema';
+import { loginByCredentials } from '@/features/auth/api/login';
 import styles from './LoginForm.module.css';
 
 const EyeIcon = () => (
@@ -89,6 +90,8 @@ export const LoginForm = () => {
     setValue,
     setFocus,
     watch,
+    clearErrors,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormInput, unknown, LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -102,16 +105,21 @@ export const LoginForm = () => {
   const passwordValue = watch('password');
 
   const onSubmit = async (data: LoginFormValues) => {
+    clearErrors();
+
     try {
-      // Имитация запроса к DummyJSON (реальный запрос добавим в след. шаге)
-      console.log('Данные формы:', data);
-      
-      // Пока просто "впускаем" пользователя для теста логики
-      setSession('fake-token', data.rememberMe);
+      const token = await loginByCredentials({
+        username: data.username,
+        password: data.password,
+      });
+
+      setSession(token, data.rememberMe);
       toast.success('Успешный вход!');
       navigate('/products');
-    } catch {
-      toast.error('Ошибка авторизации');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Ошибка авторизации';
+      setError('password', { type: 'server', message });
+      toast.error(message);
     }
   };
 
@@ -185,7 +193,7 @@ export const LoginForm = () => {
       </button>
 
       <div className={styles.bottomBlock}>
-        <div className={styles.divider} />
+        <div className={styles.divider}>или</div>
         <p className={styles.signupText}>
           Нет аккаунта? <a href="#" className={styles.signupLink}>Создать</a>
         </p>

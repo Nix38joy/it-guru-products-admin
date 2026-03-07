@@ -13,6 +13,9 @@ export const useSessionStore = create<SessionState>((set) => ({
   isAuthenticated: !!(localStorage.getItem('token') || sessionStorage.getItem('token')),
 
   setSession: (token, rememberMe) => {
+    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
+
     const storage = rememberMe ? localStorage : sessionStorage;
     storage.setItem('token', token);
     set({ token, isAuthenticated: true });

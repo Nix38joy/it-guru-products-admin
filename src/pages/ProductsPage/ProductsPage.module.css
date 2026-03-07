@@ -1,0 +1,120 @@
+.page {
+  min-height: 100vh;
+  background: #f8fafc;
+  padding: 32px 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.container {
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.addButton {
+  border: none;
+  border-radius: 8px;
+  background: #0059c9;
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.addButton:hover {
+  background: #0047a3;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+.progressWrap {
+  height: 3px;
+  background: #e2e8f0;
+}
+
+.progressBar {
+  height: 100%;
+  width: 35%;
+  background: linear-gradient(90deg, #0059c9, #4f91e6);
+  animation: loading 1s ease-in-out infinite;
+}
+
+@keyframes loading {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}
+
+.loadingText {
+  margin: 14px 16px 0;
+  color: #64748b;
+  font-size: 0.8125rem;
+}
+
+.error {
+  margin: 14px 16px 0;
+  color: #dc2626;
+  font-size: 0.8125rem;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 780px;
+}
+
+.table th,
+.table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  text-align: left;
+  font-size: 0.875rem;
+  color: #334155;
+}
+
+.table th {
+  background: #f8fafc;
+  color: #475569;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.dangerRating {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.empty {
+  padding: 20px 16px;
+  color: #64748b;
+  font-size: 0.875rem;
+}
