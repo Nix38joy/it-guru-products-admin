@@ -5,6 +5,7 @@ import styles from './ProductsPage.module.css';
 
 interface ProductTableRow {
   title: string;
+  subtitle: string;
   brand: string;
   sku: string;
   ratingText: string;
@@ -17,6 +18,7 @@ interface ProductTableRow {
 const manualRows: ProductTableRow[] = [
   {
     title: 'USB Флэшкарта 16GB',
+    subtitle: 'Аксессуары',
     brand: 'Samsung',
     sku: 'RCH45Q1A',
     ratingText: '4.3/5',
@@ -26,6 +28,7 @@ const manualRows: ProductTableRow[] = [
   },
   {
     title: 'Утюг Braun TexStyle 9',
+    subtitle: 'Бытовая техника',
     brand: 'TexStyle',
     sku: 'DFCHQ1A',
     ratingText: '4.9/5',
@@ -35,6 +38,7 @@ const manualRows: ProductTableRow[] = [
   },
   {
     title: 'Смартфон Apple Iphone 17',
+    subtitle: 'Телефоны',
     brand: 'Apple',
     sku: 'GUYHD2-X4',
     ratingText: '4.5/5',
@@ -44,6 +48,7 @@ const manualRows: ProductTableRow[] = [
   },
   {
     title: 'Игровая консоль PlayStation',
+    subtitle: 'Игровые приставки',
     brand: 'Sony',
     sku: 'HT45Q21',
     ratingText: '4.1/5',
@@ -53,6 +58,7 @@ const manualRows: ProductTableRow[] = [
   },
   {
     title: 'Фен Dyson Supersonic Nural',
+    subtitle: 'Электроника',
     brand: 'Dyson',
     sku: 'FJHHGF - CR4',
     ratingText: '3.3/5',
@@ -83,6 +89,7 @@ export const ProductsPage = () => {
     ? manualRows
     : visibleProducts.map((product) => ({
       title: product.title,
+      subtitle: product.category,
       brand: product.brand,
       sku: product.sku ?? '—',
       ratingText: product.rating.toFixed(1),
@@ -116,6 +123,20 @@ export const ProductsPage = () => {
       ...prev,
       [rowIndex]: !prev[rowIndex],
     }));
+  };
+
+  const renderPrice = (priceText: string) => {
+    const match = priceText.match(/^(.*?,)\s*(.*)$/);
+    if (!match) {
+      return priceText;
+    }
+
+    return (
+      <>
+        {match[1]}{' '}
+        <span className={styles.priceFraction}>{match[2]}</span>
+      </>
+    );
   };
 
   return (
@@ -164,7 +185,16 @@ export const ProductsPage = () => {
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th>Наименование</th>
+                  <th>
+                    <div className={styles.headerNameCell}>
+                      <input
+                        type="checkbox"
+                        className={styles.headerCheckbox}
+                        aria-label="Выбрать все позиции"
+                      />
+                      <span>Наименование</span>
+                    </div>
+                  </th>
                   <th>Вендор</th>
                   <th>Артикул</th>
                   <th>Оценка</th>
@@ -194,7 +224,10 @@ export const ProductsPage = () => {
                           aria-label={`Отметить строку ${index + 1}`}
                         />
                         <span className={styles.rowCheckboxLarge} aria-hidden="true" />
-                        <span className={styles.nameText}>{row.title}</span>
+                        <span className={styles.nameText}>
+                          <span className={styles.nameTitle}>{row.title}</span>
+                          <span className={styles.nameSubtitle}>{row.subtitle}</span>
+                        </span>
                       </div>
                     </td>
                     <td>{row.brand}</td>
@@ -211,7 +244,7 @@ export const ProductsPage = () => {
                         row.ratingText
                       )}
                     </td>
-                    <td>{row.priceText}</td>
+                    <td>{renderPrice(row.priceText)}</td>
                     <td className={styles.stockCell}>
                       {row.stockLevel > 0 ? (
                         <span className={styles.stockSticks} aria-label={`${row.stockLevel} палочки`}>

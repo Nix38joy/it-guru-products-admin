@@ -100,7 +100,7 @@
 .addButton {
   border: none;
   border-radius: 8px;
-  background: #0059c9;
+  background: #242edb;
   color: #ffffff;
   font-size: 0.8125rem;
   font-weight: 600;
@@ -186,7 +186,7 @@
 .table td {
   width: calc(100% / 6);
   padding: 13px 18px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid #d5dde7;
   text-align: left;
   font-size: 0.875rem;
   color: #334155;
@@ -249,6 +249,13 @@
   text-align: center;
 }
 
+.headerNameCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 0;
+}
+
 .nameCell {
   font-weight: 700;
   color: #0f172a;
@@ -263,10 +270,28 @@
 
 .nameText {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.nameTitle {
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+.nameSubtitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  color: #94a3b8;
+  font-style: normal;
+  font-weight: 500;
+}
+
+.headerCheckbox,
 .rowCheckbox {
   width: 14px;
   height: 14px;
@@ -280,6 +305,7 @@
   flex-shrink: 0;
 }
 
+.headerCheckbox:checked,
 .rowCheckbox:checked {
   background: #0059c9;
   border-color: #0059c9;
@@ -314,6 +340,10 @@
   height: 14px;
   border-radius: 2px;
   background: #334155;
+}
+
+.priceFraction {
+  color: #94a3b8;
 }
 
 .empty {
