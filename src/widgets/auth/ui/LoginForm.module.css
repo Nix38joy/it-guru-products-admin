@@ -43,6 +43,14 @@
   outline: none;
 }
 
+.leftAdornment {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  margin-left: 10px;
+}
+
 .inputWrapper:focus-within {
   border-color: #2563eb;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
@@ -95,7 +103,7 @@
 .button {
   width: 100%;
   padding: 12px;
-  background: #0a84ff;
+  background: #0059c9;
   color: #ffffff;
   border: none;
   border-radius: 6px;
@@ -106,7 +114,7 @@
 }
 
 .button:hover:not(:disabled) {
-  background: #006fe0;
+  background: #0047a3;
 }
 
 .button:disabled {
@@ -129,12 +137,13 @@
 
 .signupLink {
   font-size: 0.8125rem;
-  color: #64748b;
+  font-weight: 600;
+  color: #0059c9;
   text-decoration: none;
 }
 
 .signupLink:hover {
-  color: #334155;
+  color: #0047a3;
   text-decoration: underline;
 }
 

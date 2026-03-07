@@ -35,6 +35,49 @@ const EyeOffIcon = () => (
   </svg>
 );
 
+const MailIcon = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" className={styles.iconSvg}>
+    <path
+      d="M4 7h16v10H4V7Z"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinejoin="round"
+    />
+    <path
+      d="m4.5 8 7.5 5 7.5-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const LockIcon = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" className={styles.iconSvg}>
+    <path
+      d="M7 10V8a5 5 0 1 1 10 0v2"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <rect
+      x="5"
+      y="10"
+      width="14"
+      height="10"
+      rx="2"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+    />
+  </svg>
+);
+
 export const LoginForm = () => {
   const navigate = useNavigate();
   const setSession = useSessionStore((state) => state.setSession);
@@ -56,6 +99,7 @@ export const LoginForm = () => {
     },
   });
   const usernameValue = watch('username');
+  const passwordValue = watch('password');
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
@@ -76,6 +120,11 @@ export const LoginForm = () => {
       <div className={styles.field}>
         <label htmlFor="username" className={styles.fieldLabel}>Почта</label>
         <div className={styles.inputWrapper}>
+          {usernameValue && (
+            <span className={styles.leftAdornment} aria-hidden="true">
+              <MailIcon />
+            </span>
+          )}
           <input
             id="username"
             type="email"
@@ -103,6 +152,11 @@ export const LoginForm = () => {
       <div className={styles.field}>
         <label htmlFor="password" className={styles.fieldLabel}>Пароль</label>
         <div className={styles.inputWrapper}>
+          {passwordValue && (
+            <span className={styles.leftAdornment} aria-hidden="true">
+              <LockIcon />
+            </span>
+          )}
           <input
             id="password"
             {...register('password')}
@@ -123,7 +177,7 @@ export const LoginForm = () => {
       </div>
 
       <label className={styles.checkboxRow}>
-        <input type="checkbox" {...register('rememberMe')} /> Запомнить меня
+        <input type="checkbox" {...register('rememberMe')} /> Запомнить данные
       </label>
 
       <button type="submit" disabled={isSubmitting} className={styles.button}>
