@@ -11,6 +11,8 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  width: 100%;
+  align-items: stretch;
 }
 
 .fieldLabel {
@@ -19,21 +21,61 @@
   color: #334155;
 }
 
-.input {
+.inputWrapper {
+  display: flex;
+  align-items: center;
   width: 100%;
-  padding: 12px 16px;
   background: #ffffff;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
-  font-size: 0.875rem;
-  color: #1e293b;
-  outline: none;
   transition: all 0.2s;
 }
 
-.input:focus {
+.input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 12px 12px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  font-size: 0.875rem;
+  color: #1e293b;
+  outline: none;
+}
+
+.inputWrapper:focus-within {
   border-color: #2563eb;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.iconButton {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 2px;
+  border-radius: 4px;
+}
+
+.iconButton:hover {
+  color: #1e293b;
+}
+
+.iconSvg {
+  width: 16px;
+  height: 16px;
+}
+
+.clearIcon {
+  font-size: 1.35rem;
+  line-height: 1;
 }
 
 .error {
