@@ -97,10 +97,9 @@ export const ProductsPage = () => {
         setError(message);
         toast.error(message);
       } finally {
-        if (currentRequestId !== requestIdRef.current) {
-          return;
+        if (currentRequestId === requestIdRef.current) {
+          setIsLoading(false);
         }
-        setIsLoading(false);
       }
     };
 

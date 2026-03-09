@@ -15,6 +15,14 @@ const FALLBACK_CREDENTIALS = {
 };
 
 export const loginByCredentials = async (credentials: LoginCredentials): Promise<string> => {
+  const isFallbackUser = credentials.username === FALLBACK_CREDENTIALS.username
+    && credentials.password === FALLBACK_CREDENTIALS.password;
+
+  // In local development, allow stable auth flow even when external API is flaky.
+  if (import.meta.env.DEV && isFallbackUser) {
+    return 'fallback-dev-token';
+  }
+
   try {
     const { data } = await axios.post<LoginResponse>('https://dummyjson.com/auth/login', {
       username: credentials.username,
@@ -39,9 +47,6 @@ export const loginByCredentials = async (credentials: LoginCredentials): Promise
 
       const hasNetworkIssue = error.code === 'ECONNABORTED' || !error.response;
       if (hasNetworkIssue) {
-        const isFallbackUser = credentials.username === FALLBACK_CREDENTIALS.username
-          && credentials.password === FALLBACK_CREDENTIALS.password;
-
         if (isFallbackUser) {
           return 'fallback-dev-token';
         }
