@@ -1,73 +1,41 @@
-# React + TypeScript + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+IT-GURU Products Admin
+Профессиональная панель управления каталогом товаров, реализованная в рамках тестового задания. Приложение демонстрирует работу со сложными табличными данными, авторизацией и современными архитектурными паттернами.
+Технологический стек
+Core: React 18 + TypeScript (Strict Mode)
+Architecture: Feature-Sliced Design (FSD) — для масштабируемости и изоляции бизнес-логики
+State Management: Zustand (Session handling & Global states)
+Data Fetching: TanStack Query (React Query) — для кэширования и управления серверным состоянием
+Forms: React Hook Form + Zod (Strict validation)
+Styling: CSS Modules (Scoped styles)
+API: DummyJSON (Auth & Products)
+Реализованный функционал
+Авторизация:
+Валидация полей на клиенте.
+Гибкая логика сессий: поддержка localStorage (Remember Me) и sessionStorage (Temporary session).
+Обработка серверных ошибок авторизации.
+Каталог товаров:
+Динамическая подгрузка данных из API.
+Серверная сортировка по ключевым столбцам (цена, рейтинг).
+Поиск товаров в реальном времени через API.
+Интерфейс:
+Визуальное соответствие макету Figma.
+Индикация загрузки (Progress bar) и Toast-уведомления.
+Условное форматирование: подсветка низкого рейтинга (ниже 3) красным цветом.
+Добавление товаров:
+Модальная форма с возможностью заполнить поля: Наименование, цена, вендор, артикул.
+Имитация успешного сохранения с базовым уведомлением.
+Установка и запуск
+Клонировать репозиторий:
+git clone github.com
+Установить зависимости:
+npm install
+Запустить проект в режиме разработки:
+npm run dev
+Архитектура (FSD)
+Проект разбит на слои согласно методологии Feature-Sliced Design:
+app: Инициализация провайдеров и глобальных стилей.
+pages: Композиция страниц (Login, Products).
+widgets: Крупные блоки (Таблица товаров, Форма авторизации).
+features: Интерактивная логика (Поиск, Сортировка, Добавление).
+entities: Бизнес-сущности (Продукт, Сессия) и их логика.
+shared: UI-кит, API-клиент и общие утилиты.
