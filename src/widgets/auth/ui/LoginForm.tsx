@@ -124,9 +124,9 @@ export const LoginForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
+    <form onSubmit={handleSubmit(onSubmit)} className={styles.form} noValidate>
       <div className={styles.field}>
-        <label htmlFor="username" className={styles.fieldLabel}>Почта</label>
+        <label htmlFor="username" className={styles.fieldLabel}>Логин</label>
         <div className={styles.inputWrapper}>
           {usernameValue && (
             <span className={styles.leftAdornment} aria-hidden="true">
@@ -135,8 +135,8 @@ export const LoginForm = () => {
           )}
           <input
             id="username"
-            type="email"
-            autoComplete="email"
+            type="text"
+            autoComplete="username"
             {...register('username')}
             className={styles.input}
           />
@@ -148,7 +148,7 @@ export const LoginForm = () => {
                 setValue('username', '', { shouldDirty: true, shouldValidate: true });
                 setFocus('username');
               }}
-              aria-label="Очистить поле почты"
+              aria-label="Очистить поле логина"
             >
               <span className={styles.clearIcon}>×</span>
             </button>
