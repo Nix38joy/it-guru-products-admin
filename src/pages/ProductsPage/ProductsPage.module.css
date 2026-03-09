@@ -215,6 +215,19 @@
   border-bottom: 1px solid #e2e8f0;
 }
 
+.sortButton {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.sortButton:hover {
+  color: #64748b;
+}
+
 .table td {
   font-size: 0.875rem;
 }
@@ -344,6 +357,83 @@
 
 .priceFraction {
   color: #94a3b8;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+}
+
+.modalCard {
+  width: min(420px, calc(100vw - 32px));
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.2);
+}
+
+.modalTitle {
+  margin: 0 0 14px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.modalForm {
+  display: grid;
+  gap: 10px;
+}
+
+.modalInput {
+  height: 38px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 0.875rem;
+}
+
+.modalInput:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.modalError {
+  margin: 0;
+  color: #dc2626;
+  font-size: 0.8125rem;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.cancelButton,
+.saveButton {
+  border: none;
+  border-radius: 8px;
+  height: 34px;
+  padding: 0 12px;
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.cancelButton {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.saveButton {
+  background: #242edb;
+  color: #ffffff;
 }
 
 .empty {

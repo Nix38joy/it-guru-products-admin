@@ -1,102 +1,77 @@
-import { useEffect, useMemo, useState } from 'react';
+import { type FormEvent, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { getProducts, type ProductItem } from '@/features/products/api/getProducts';
 import styles from './ProductsPage.module.css';
 
-interface ProductTableRow {
+type SortField = 'title' | 'brand' | 'sku' | 'rating' | 'price' | 'stock';
+type SortOrder = 'asc' | 'desc';
+
+interface NewProductDraft {
   title: string;
-  subtitle: string;
+  price: string;
   brand: string;
   sku: string;
-  ratingText: string;
-  ratingValue: number;
-  highlightRatingNumber?: boolean;
-  priceText: string;
-  stockLevel: number;
 }
 
-const manualRows: ProductTableRow[] = [
-  {
-    title: 'USB Флэшкарта 16GB',
-    subtitle: 'Аксессуары',
-    brand: 'Samsung',
-    sku: 'RCH45Q1A',
-    ratingText: '4.3/5',
-    ratingValue: 4.3,
-    priceText: '48 652, 00',
-    stockLevel: 3,
-  },
-  {
-    title: 'Утюг Braun TexStyle 9',
-    subtitle: 'Бытовая техника',
-    brand: 'TexStyle',
-    sku: 'DFCHQ1A',
-    ratingText: '4.9/5',
-    ratingValue: 4.9,
-    priceText: '4 233, 00',
-    stockLevel: 1,
-  },
-  {
-    title: 'Смартфон Apple Iphone 17',
-    subtitle: 'Телефоны',
-    brand: 'Apple',
-    sku: 'GUYHD2-X4',
-    ratingText: '4.5/5',
-    ratingValue: 4.5,
-    priceText: '88 652, 00',
-    stockLevel: 2,
-  },
-  {
-    title: 'Игровая консоль PlayStation',
-    subtitle: 'Игровые приставки',
-    brand: 'Sony',
-    sku: 'HT45Q21',
-    ratingText: '4.1/5',
-    ratingValue: 4.1,
-    priceText: '56 236, 00',
-    stockLevel: 3,
-  },
-  {
-    title: 'Фен Dyson Supersonic Nural',
-    subtitle: 'Электроника',
-    brand: 'Dyson',
-    sku: 'FJHHGF - CR4',
-    ratingText: '3.3/5',
-    ratingValue: 3.3,
-    highlightRatingNumber: true,
-    priceText: '48 652, 00',
-    stockLevel: 3,
-  },
-];
-
 export const ProductsPage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialQuery = searchParams.get('q') ?? '';
+  const initialSortBy = (searchParams.get('sortBy') as SortField | null) ?? 'price';
+  const initialSortOrder = (searchParams.get('sortOrder') as SortOrder | null) ?? 'desc';
+
+  const [query, setQuery] = useState(initialQuery);
+  const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
+  const [sortBy, setSortBy] = useState<SortField>(initialSortBy);
+  const [sortOrder, setSortOrder] = useState<SortOrder>(initialSortOrder);
   const [products, setProducts] = useState<ProductItem[]>([]);
+  const [localProducts, setLocalProducts] = useState<ProductItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [checkedRows, setCheckedRows] = useState<Record<number, boolean>>({});
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [draft, setDraft] = useState<NewProductDraft>({
+    title: '',
+    price: '',
+    brand: '',
+    sku: '',
+  });
+  const [draftError, setDraftError] = useState<string | null>(null);
 
   const priceFormatter = useMemo(
     () =>
       new Intl.NumberFormat('ru-RU', {
-        style: 'currency',
-        currency: 'RUB',
+        minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       }),
     [],
   );
-  const visibleProducts = products.slice(0, 5);
-  const tableRows: ProductTableRow[] = manualRows.length
-    ? manualRows
-    : visibleProducts.map((product) => ({
-      title: product.title,
-      subtitle: product.category,
-      brand: product.brand,
-      sku: product.sku ?? '—',
-      ratingText: product.rating.toFixed(1),
-      ratingValue: product.rating,
-      priceText: priceFormatter.format(product.price),
-      stockLevel: Math.max(1, Math.min(5, Math.round(product.stock / 20))),
-    }));
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setDebouncedQuery(query.trim());
+    }, 350);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [query]);
+
+  useEffect(() => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+
+      if (debouncedQuery) {
+        next.set('q', debouncedQuery);
+      } else {
+        next.delete('q');
+      }
+
+      next.set('sortBy', sortBy);
+      next.set('sortOrder', sortOrder);
+      return next;
+    }, { replace: true });
+  }, [debouncedQuery, sortBy, sortOrder, setSearchParams]);
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -104,7 +79,7 @@ export const ProductsPage = () => {
         setIsLoading(true);
         setError(null);
 
-        const data = await getProducts();
+        const data = await getProducts({ query: debouncedQuery, limit: 100 });
         setProducts(data);
       } catch {
         const message = 'Не удалось загрузить список товаров';
@@ -116,14 +91,85 @@ export const ProductsPage = () => {
     };
 
     void loadProducts();
-  }, []);
+  }, [debouncedQuery]);
 
-  const toggleRowCheck = (rowIndex: number) => {
+  const displayedProducts = useMemo(() => {
+    const loweredQuery = debouncedQuery.toLowerCase();
+    const filteredLocal = localProducts.filter((item) => {
+      if (!loweredQuery) {
+        return true;
+      }
+
+      return (
+        item.title.toLowerCase().includes(loweredQuery)
+        || item.brand.toLowerCase().includes(loweredQuery)
+        || (item.sku ?? '').toLowerCase().includes(loweredQuery)
+      );
+    });
+
+    const merged = [...filteredLocal, ...products];
+    const sorted = [...merged].sort((a, b) => {
+      const direction = sortOrder === 'asc' ? 1 : -1;
+
+      switch (sortBy) {
+        case 'title':
+          return a.title.localeCompare(b.title) * direction;
+        case 'brand':
+          return a.brand.localeCompare(b.brand) * direction;
+        case 'sku':
+          return (a.sku ?? '').localeCompare(b.sku ?? '') * direction;
+        case 'rating':
+          return (a.rating - b.rating) * direction;
+        case 'price':
+          return (a.price - b.price) * direction;
+        case 'stock':
+          return (a.stock - b.stock) * direction;
+        default:
+          return 0;
+      }
+    });
+
+    return sorted;
+  }, [debouncedQuery, localProducts, products, sortBy, sortOrder]);
+
+  const allChecked = displayedProducts.length > 0
+    && displayedProducts.every((item) => checkedRows[item.id]);
+
+  const toggleRowCheck = (rowId: number) => {
     setCheckedRows((prev) => ({
       ...prev,
-      [rowIndex]: !prev[rowIndex],
+      [rowId]: !prev[rowId],
     }));
   };
+
+  const toggleAllRows = () => {
+    setCheckedRows((prev) => {
+      const next = { ...prev };
+      if (allChecked) {
+        displayedProducts.forEach((item) => {
+          delete next[item.id];
+        });
+      } else {
+        displayedProducts.forEach((item) => {
+          next[item.id] = true;
+        });
+      }
+
+      return next;
+    });
+  };
+
+  const handleSort = (field: SortField) => {
+    if (sortBy === field) {
+      setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+      return;
+    }
+
+    setSortBy(field);
+    setSortOrder('asc');
+  };
+
+  const formatPrice = (price: number) => priceFormatter.format(price).replace(',', ', ');
 
   const renderPrice = (priceText: string) => {
     const match = priceText.match(/^(.*?,)\s*(.*)$/);
@@ -137,6 +183,38 @@ export const ProductsPage = () => {
         <span className={styles.priceFraction}>{match[2]}</span>
       </>
     );
+  };
+
+  const submitNewProduct = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setDraftError(null);
+
+    const parsedPrice = Number(draft.price.replace(',', '.'));
+    if (!draft.title.trim() || !draft.brand.trim() || !draft.sku.trim() || Number.isNaN(parsedPrice) || parsedPrice <= 0) {
+      setDraftError('Заполните все поля корректно');
+      return;
+    }
+
+    const newItem: ProductItem = {
+      id: Date.now(),
+      title: draft.title.trim(),
+      price: parsedPrice,
+      rating: 0,
+      brand: draft.brand.trim(),
+      sku: draft.sku.trim(),
+      category: 'Новая позиция',
+      stock: 60,
+    };
+
+    setLocalProducts((prev) => [newItem, ...prev]);
+    setDraft({
+      title: '',
+      price: '',
+      brand: '',
+      sku: '',
+    });
+    setIsCreateOpen(false);
+    toast.success('Товар добавлен');
   };
 
   return (
@@ -155,6 +233,8 @@ export const ProductsPage = () => {
               type="search"
               placeholder="Найти"
               className={styles.searchInput}
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
             />
           </div>
         </header>
@@ -164,7 +244,11 @@ export const ProductsPage = () => {
         <div className={styles.card}>
           <div className={styles.positionsBand}>
             <p className={styles.positionsLabel}>Все позиции</p>
-            <button type="button" className={styles.addButton}>
+            <button
+              type="button"
+              className={styles.addButton}
+              onClick={() => setIsCreateOpen(true)}
+            >
               <span className={styles.addIcon} aria-hidden="true">+</span>
               Добавить
             </button>
@@ -191,64 +275,88 @@ export const ProductsPage = () => {
                         type="checkbox"
                         className={styles.headerCheckbox}
                         aria-label="Выбрать все позиции"
+                        checked={allChecked}
+                        onChange={toggleAllRows}
                       />
-                      <span>Наименование</span>
+                      <button type="button" className={styles.sortButton} onClick={() => handleSort('title')}>
+                        Наименование
+                      </button>
                     </div>
                   </th>
-                  <th>Вендор</th>
-                  <th>Артикул</th>
-                  <th>Оценка</th>
-                  <th>Цена, Р</th>
-                  <th>Количество</th>
+                  <th>
+                    <button type="button" className={styles.sortButton} onClick={() => handleSort('brand')}>
+                      Вендор
+                    </button>
+                  </th>
+                  <th>
+                    <button type="button" className={styles.sortButton} onClick={() => handleSort('sku')}>
+                      Артикул
+                    </button>
+                  </th>
+                  <th>
+                    <button type="button" className={styles.sortButton} onClick={() => handleSort('rating')}>
+                      Оценка
+                    </button>
+                  </th>
+                  <th>
+                    <button type="button" className={styles.sortButton} onClick={() => handleSort('price')}>
+                      Цена, Р
+                    </button>
+                  </th>
+                  <th>
+                    <button type="button" className={styles.sortButton} onClick={() => handleSort('stock')}>
+                      Количество
+                    </button>
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {!isLoading && tableRows.length === 0 && (
+                {!isLoading && displayedProducts.length === 0 && (
                   <tr>
                     <td colSpan={6} className={styles.empty}>Список товаров пуст</td>
                   </tr>
                 )}
 
-                {tableRows.map((row, index) => (
+                {displayedProducts.map((product) => (
                   <tr
-                    key={`${row.sku}-${index}`}
-                    className={checkedRows[index] ? styles.checkedRow : undefined}
+                    key={product.id}
+                    className={checkedRows[product.id] ? styles.checkedRow : undefined}
                   >
-                    <td className={styles.nameCell} title={row.title}>
+                    <td className={styles.nameCell} title={product.title}>
                       <div className={styles.nameCellInner}>
                         <input
                           type="checkbox"
                           className={styles.rowCheckbox}
-                          checked={!!checkedRows[index]}
-                          onChange={() => toggleRowCheck(index)}
-                          aria-label={`Отметить строку ${index + 1}`}
+                          checked={!!checkedRows[product.id]}
+                          onChange={() => toggleRowCheck(product.id)}
+                          aria-label={`Отметить товар ${product.title}`}
                         />
                         <span className={styles.rowCheckboxLarge} aria-hidden="true" />
                         <span className={styles.nameText}>
-                          <span className={styles.nameTitle}>{row.title}</span>
-                          <span className={styles.nameSubtitle}>{row.subtitle}</span>
+                          <span className={styles.nameTitle}>{product.title}</span>
+                          <span className={styles.nameSubtitle}>{product.category}</span>
                         </span>
                       </div>
                     </td>
-                    <td>{row.brand}</td>
-                    <td>{row.sku}</td>
+                    <td>{product.brand}</td>
+                    <td>{product.sku ?? '—'}</td>
                     <td>
-                      {row.ratingText.includes('/') ? (
+                      {`${product.rating.toFixed(1)}/5`.includes('/') ? (
                         <>
-                          <span className={(row.ratingValue < 3 || row.highlightRatingNumber) ? styles.dangerRating : undefined}>
-                            {row.ratingText.split('/')[0]}
+                          <span className={product.rating < 3 ? styles.dangerRating : undefined}>
+                            {product.rating.toFixed(1)}
                           </span>
-                          /{row.ratingText.split('/')[1]}
+                          /5
                         </>
                       ) : (
-                        row.ratingText
+                        product.rating.toFixed(1)
                       )}
                     </td>
-                    <td>{renderPrice(row.priceText)}</td>
+                    <td>{renderPrice(formatPrice(product.price))}</td>
                     <td className={styles.stockCell}>
-                      {row.stockLevel > 0 ? (
-                        <span className={styles.stockSticks} aria-label={`${row.stockLevel} палочки`}>
-                          {Array.from({ length: row.stockLevel }).map((_, stickIndex) => (
+                      {product.stock > 0 ? (
+                        <span className={styles.stockSticks} aria-label={`${product.stock} в наличии`}>
+                          {Array.from({ length: Math.max(1, Math.min(5, Math.round(product.stock / 20))) }).map((_, stickIndex) => (
                             <span key={stickIndex} className={styles.stockStick} />
                           ))}
                         </span>
@@ -263,6 +371,49 @@ export const ProductsPage = () => {
           </div>
         </div>
       </section>
+
+      {isCreateOpen && (
+        <div className={styles.modalOverlay} role="presentation" onClick={() => setIsCreateOpen(false)}>
+          <div className={styles.modalCard} role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+            <h2 className={styles.modalTitle}>Добавить товар</h2>
+            <form className={styles.modalForm} onSubmit={submitNewProduct}>
+              <input
+                className={styles.modalInput}
+                placeholder="Наименование"
+                value={draft.title}
+                onChange={(event) => setDraft((prev) => ({ ...prev, title: event.target.value }))}
+              />
+              <input
+                className={styles.modalInput}
+                placeholder="Цена"
+                value={draft.price}
+                onChange={(event) => setDraft((prev) => ({ ...prev, price: event.target.value }))}
+              />
+              <input
+                className={styles.modalInput}
+                placeholder="Вендор"
+                value={draft.brand}
+                onChange={(event) => setDraft((prev) => ({ ...prev, brand: event.target.value }))}
+              />
+              <input
+                className={styles.modalInput}
+                placeholder="Артикул"
+                value={draft.sku}
+                onChange={(event) => setDraft((prev) => ({ ...prev, sku: event.target.value }))}
+              />
+              {draftError && <p className={styles.modalError}>{draftError}</p>}
+              <div className={styles.modalActions}>
+                <button type="button" className={styles.cancelButton} onClick={() => setIsCreateOpen(false)}>
+                  Отмена
+                </button>
+                <button type="submit" className={styles.saveButton}>
+                  Сохранить
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </main>
   );
 };
