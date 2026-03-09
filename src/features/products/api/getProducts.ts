@@ -22,14 +22,11 @@ interface GetProductsParams {
 
 export const getProducts = async (params: GetProductsParams = {}): Promise<ProductItem[]> => {
   const { query = '', limit = 50 } = params;
-  const endpoint = query.trim()
-    ? 'https://dummyjson.com/products/search'
-    : 'https://dummyjson.com/products';
 
-  const { data } = await axios.get<ProductsResponse>(endpoint, {
+  const { data } = await axios.get<ProductsResponse>('https://dummyjson.com/products/search', {
     params: {
       limit,
-      ...(query.trim() ? { q: query.trim() } : {}),
+      q: query.trim(),
     },
   });
 

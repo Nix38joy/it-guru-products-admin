@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useMemo, useState } from 'react';
+import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { getProducts, type ProductItem } from '@/features/products/api/getProducts';
@@ -37,6 +37,7 @@ export const ProductsPage = () => {
     sku: '',
   });
   const [draftError, setDraftError] = useState<string | null>(null);
+  const requestIdRef = useRef(0);
 
   const priceFormatter = useMemo(
     () =>
@@ -74,18 +75,31 @@ export const ProductsPage = () => {
   }, [debouncedQuery, sortBy, sortOrder, setSearchParams]);
 
   useEffect(() => {
+    requestIdRef.current += 1;
+    const currentRequestId = requestIdRef.current;
+
     const loadProducts = async () => {
       try {
         setIsLoading(true);
         setError(null);
-
         const data = await getProducts({ query: debouncedQuery, limit: 100 });
+        if (currentRequestId !== requestIdRef.current) {
+          return;
+        }
         setProducts(data);
       } catch {
-        const message = 'Не удалось загрузить список товаров';
+        if (currentRequestId !== requestIdRef.current) {
+          return;
+        }
+        const message = debouncedQuery
+          ? 'Не удалось выполнить поиск'
+          : 'Не удалось загрузить список товаров';
         setError(message);
         toast.error(message);
       } finally {
+        if (currentRequestId !== requestIdRef.current) {
+          return;
+        }
         setIsLoading(false);
       }
     };
@@ -95,6 +109,7 @@ export const ProductsPage = () => {
 
   const displayedProducts = useMemo(() => {
     const loweredQuery = query.trim().toLowerCase();
+    const sourceProducts = [...localProducts, ...products];
     const matchesQuery = (item: ProductItem) => (
       item.title.toLowerCase().includes(loweredQuery)
       || item.brand.toLowerCase().includes(loweredQuery)
@@ -102,23 +117,14 @@ export const ProductsPage = () => {
       || item.category.toLowerCase().includes(loweredQuery)
     );
 
-    const filteredLocal = localProducts.filter((item) => {
+    const filtered = sourceProducts.filter((item) => {
       if (!loweredQuery) {
         return true;
       }
-
-      return matchesQuery(item);
-    });
-    const filteredApi = products.filter((item) => {
-      if (!loweredQuery) {
-        return true;
-      }
-
       return matchesQuery(item);
     });
 
-    const merged = [...filteredLocal, ...filteredApi];
-    const sorted = [...merged].sort((a, b) => {
+    return [...filtered].sort((a, b) => {
       const direction = sortOrder === 'asc' ? 1 : -1;
 
       switch (sortBy) {
@@ -138,9 +144,7 @@ export const ProductsPage = () => {
           return 0;
       }
     });
-
-    return sorted;
-  }, [debouncedQuery, localProducts, products, sortBy, sortOrder]);
+  }, [query, localProducts, products, sortBy, sortOrder]);
 
   const allChecked = displayedProducts.length > 0
     && displayedProducts.every((item) => checkedRows[item.id]);
