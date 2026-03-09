@@ -94,20 +94,30 @@ export const ProductsPage = () => {
   }, [debouncedQuery]);
 
   const displayedProducts = useMemo(() => {
-    const loweredQuery = debouncedQuery.toLowerCase();
+    const loweredQuery = query.trim().toLowerCase();
+    const matchesQuery = (item: ProductItem) => (
+      item.title.toLowerCase().includes(loweredQuery)
+      || item.brand.toLowerCase().includes(loweredQuery)
+      || (item.sku ?? '').toLowerCase().includes(loweredQuery)
+      || item.category.toLowerCase().includes(loweredQuery)
+    );
+
     const filteredLocal = localProducts.filter((item) => {
       if (!loweredQuery) {
         return true;
       }
 
-      return (
-        item.title.toLowerCase().includes(loweredQuery)
-        || item.brand.toLowerCase().includes(loweredQuery)
-        || (item.sku ?? '').toLowerCase().includes(loweredQuery)
-      );
+      return matchesQuery(item);
+    });
+    const filteredApi = products.filter((item) => {
+      if (!loweredQuery) {
+        return true;
+      }
+
+      return matchesQuery(item);
     });
 
-    const merged = [...filteredLocal, ...products];
+    const merged = [...filteredLocal, ...filteredApi];
     const sorted = [...merged].sort((a, b) => {
       const direction = sortOrder === 'asc' ? 1 : -1;
 
