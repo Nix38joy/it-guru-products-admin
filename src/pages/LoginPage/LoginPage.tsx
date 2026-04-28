@@ -14,7 +14,7 @@ export const LoginPage = () => {
             </svg>
           </div>
           <h1 className={styles.title}>Добро пожаловать!</h1>
-          <p className={styles.subtitle}>пожалуйста, авторизуйтесь</p>
+          <p className={styles.subtitle}>Пожалуйста, авторизуйтесь</p>
         </header>
         
         <LoginForm />

@@ -195,7 +195,7 @@ export const LoginForm = () => {
       <div className={styles.bottomBlock}>
         <div className={styles.divider}>или</div>
         <p className={styles.signupText}>
-          Нет аккаунта? <a href="#" className={styles.signupLink}>Создать</a>
+          No account? <a href="#" className={styles.signupLink}>Create</a>
         </p>
       </div>
     </form>
