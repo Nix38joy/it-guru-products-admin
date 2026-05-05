@@ -234,7 +234,7 @@ export const ProductsPage = () => {
     <main className={styles.page}>
       <section className={styles.container}>
         <header className={styles.header}>
-          <h1 className={styles.title}>Товары</h1>
+          <h1 className={styles.title}>Inventory Pro</h1>
           <div className={styles.searchInputWrap}>
             <span className={styles.searchIcon} aria-hidden="true">
               <svg viewBox="0 0 24 24">
