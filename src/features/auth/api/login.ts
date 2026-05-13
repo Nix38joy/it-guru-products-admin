@@ -10,8 +10,8 @@ interface LoginResponse {
 }
 
 const FALLBACK_CREDENTIALS = {
-  username: 'emilys',
-  password: 'emilyspass',
+  username: 'german',
+  password: 'YAkrevedko253879',
 };
 
 export const loginByCredentials = async (credentials: LoginCredentials): Promise<string> => {
