@@ -158,7 +158,7 @@ export const LoginForm = () => {
       </div>
 
       <div className={styles.field}>
-        <label htmlFor="password" className={styles.fieldLabel}>Пароль</label>
+        <label htmlFor="password" className={styles.fieldLabel}>Password</label>
         <div className={styles.inputWrapper}>
           {passwordValue && (
             <span className={styles.leftAdornment} aria-hidden="true">
