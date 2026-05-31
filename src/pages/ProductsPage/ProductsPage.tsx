@@ -256,7 +256,7 @@ export const ProductsPage = () => {
 
         <div className={styles.card}>
           <div className={styles.positionsBand}>
-            <p className={styles.positionsLabel}>Все позиции</p>
+            <p className={styles.positionsLabel}>Полный список</p>
             <button
               type="button"
               className={styles.addButton}
@@ -287,12 +287,12 @@ export const ProductsPage = () => {
                       <input
                         type="checkbox"
                         className={styles.headerCheckbox}
-                        aria-label="Выбрать все позиции"
+                        aria-label="Выбрать все"
                         checked={allChecked}
                         onChange={toggleAllRows}
                       />
                       <button type="button" className={styles.sortButton} onClick={() => handleSort('title')}>
-                        Наименование
+                        Название
                       </button>
                     </div>
                   </th>
