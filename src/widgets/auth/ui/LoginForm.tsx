@@ -8,6 +8,7 @@ import { loginSchema, type LoginFormInput, type LoginFormValues } from '@/featur
 import { loginByCredentials } from '@/features/auth/api/login';
 import styles from './LoginForm.module.css';
 
+// Все иконки собраны внутри этого же файла, чтобы не было ошибок импорта
 const EyeIcon = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true" className={styles.iconSvg}>
     <path
@@ -89,7 +90,6 @@ export const LoginForm = () => {
     handleSubmit,
     setValue,
     setFocus,
-    watch,
     clearErrors,
     setError,
     formState: { errors, isSubmitting },
@@ -101,8 +101,6 @@ export const LoginForm = () => {
       rememberMe: false,
     },
   });
-  const usernameValue = watch('username');
-  const passwordValue = watch('password');
 
   const onSubmit = async (data: LoginFormValues) => {
     clearErrors();
@@ -125,48 +123,46 @@ export const LoginForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={styles.form} noValidate>
+      {/* Поле Логин */}
       <div className={styles.field}>
         <label htmlFor="username" className={styles.fieldLabel}>Логин</label>
         <div className={styles.inputWrapper}>
-          {usernameValue && (
-            <span className={styles.leftAdornment} aria-hidden="true">
-              <MailIcon />
-            </span>
-          )}
+          <span className={styles.leftAdornment} aria-hidden="true">
+            <MailIcon />
+          </span>
           <input
             id="username"
             type="text"
+            placeholder=" " /* Нужен для работы CSS-селектора :placeholder-shown */
             autoComplete="username"
             {...register('username')}
             className={styles.input}
           />
-          {usernameValue && (
-            <button
-              type="button"
-              className={styles.iconButton}
-              onClick={() => {
-                setValue('username', '', { shouldDirty: true, shouldValidate: true });
-                setFocus('username');
-              }}
-              aria-label="Очистить поле логина"
-            >
-              <span className={styles.clearIcon}>×</span>
-            </button>
-          )}
+          <button
+            type="button"
+            className={styles.clearButton} /* Показывается через CSS, когда инпут заполнен */
+            onClick={() => {
+              setValue('username', '', { shouldDirty: true, shouldValidate: true });
+              setFocus('username');
+            }}
+            aria-label="Очистить поле логина"
+          >
+            <span className={styles.clearIcon}>×</span>
+          </button>
         </div>
         {errors.username && <span className={styles.error}>{errors.username.message}</span>}
       </div>
 
+      {/* Поле Пароль */}
       <div className={styles.field}>
-        <label htmlFor="password" className={styles.fieldLabel}>Password</label>
+        <label htmlFor="password" className={styles.fieldLabel}>Пароль</label>
         <div className={styles.inputWrapper}>
-          {passwordValue && (
-            <span className={styles.leftAdornment} aria-hidden="true">
-              <LockIcon />
-            </span>
-          )}
+          <span className={styles.leftAdornment} aria-hidden="true">
+            <LockIcon />
+          </span>
           <input
             id="password"
+            placeholder=" " /* Нужен для работы CSS-селектора :placeholder-shown */
             {...register('password')}
             type={isPasswordVisible ? 'text' : 'password'}
             autoComplete="current-password"
@@ -195,9 +191,10 @@ export const LoginForm = () => {
       <div className={styles.bottomBlock}>
         <div className={styles.divider}>или</div>
         <p className={styles.signupText}>
-          No account? <a href="#" className={styles.signupLink}>Create</a>
+          Нет аккаунта? <button type="button" className={styles.signupButton}>Создать</button>
         </p>
       </div>
     </form>
   );
 };
+
